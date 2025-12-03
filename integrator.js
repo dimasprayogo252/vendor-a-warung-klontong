@@ -72,7 +72,7 @@ app.listen(port, () => {
   console.log('Integrator BERHASIL jalan!');
   console.log(`Buka di browser: http://localhost:${port}/marketplace`);
   console.log('Atau cek semua vendor dulu:');
-  console.log(`   Vendor A → http://localhost:3306/products`);
+  console.log(`   Vendor A → http://localhost:3306/vendor-a`);
   console.log(`   Vendor B → http://localhost:3307/products`);
   console.log(`   Vendor C → http://localhost:3300/products`);
 });
