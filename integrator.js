@@ -67,5 +67,12 @@ app.get('/', (req, res) => {
   `);
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('Integrator jalan!'));
+const port = process.env.PORT || 3310;
+app.listen(port, () => {
+  console.log('Integrator BERHASIL jalan!');
+  console.log(`Buka di browser: http://localhost:${port}/marketplace`);
+  console.log('Atau cek semua vendor dulu:');
+  console.log(`   Vendor A → http://localhost:3001/products`);
+  console.log(`   Vendor B → http://localhost:3002/products`);
+  console.log(`   Vendor C → http://localhost:3003/products`);
+});
