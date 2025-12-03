@@ -3,9 +3,9 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
-const VENDOR_A = 'https://vendor-a-klontong.vercel.app/products';
-const VENDOR_B = 'https://vendor-b-distro.vercel.app/products';
-const VENDOR_C = 'https://vendor-c-resto.vercel.app/products';
+const VENDOR_A = 'https://vendor-a-klontong.vercel.app/api/vendor-a';
+const VENDOR_B = 'https://vendor-b-distro.vercel.app/api/vendor-b';
+const VENDOR_C = 'https://vendor-c-resto.vercel.app/api/vendor-c';
 
 app.get('/marketplace', async (req, res) => {
   try {
@@ -62,8 +62,6 @@ app.get('/marketplace', async (req, res) => {
 app.get('/', (req, res) => {
   res.send(`
     <h1>Banyuwangi Marketplace - Integrator UAS Interopabilitas</h1>
-    <p><a href="/marketplace">Klik di sini</a> untuk melihat hasil normalisasi semua vendor</p>
-    <p>Dikerjakan sendiri oleh: Dimas Prayogo (dimasprayogo252)</p>
   `);
 });
 
