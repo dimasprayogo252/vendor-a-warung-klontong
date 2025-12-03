@@ -2,12 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
-// GANTI URL ke localhost (sesuai port yang jalan)
-const VENDOR_A = 'http://localhost:3310/api/vendor-a';  // Port 3310 dari Vendor A
-const VENDOR_B = 'http://localhost:3307/api/vendor-b';  // Port 3307 dari Vendor B
-const VENDOR_C = 'https://vendor-c-resto.vercel.app/api/vendor-c';  // Biarkan ini jika ada
+const VENDOR_A = 'http://localhost:3310/api/vendor-a'; 
+const VENDOR_B = 'http://localhost:3307/api/vendor-b';  
+const VENDOR_C = 'https://vendor-c-resto.vercel.app/api/vendor-c'; 
 
-// Fallback URLs jika localhost gagal
 const FALLBACK_URLS = {
   vendorA: ['http://localhost:3310/api/vendor-a', 'https://vendor-a-klontong.vercel.app/api/vendor-a'],
   vendorB: ['http://localhost:3307/api/vendor-b', 'https://vendor-b-distro.vercel.app/api/vendor-b'],
@@ -17,15 +15,15 @@ const FALLBACK_URLS = {
 async function tryFetchWithFallback(vendor, urls) {
   for (const url of urls) {
     try {
-      console.log(`🔄 Mencoba ${vendor}: ${url}`);
+      console.log(`Coba ${vendor}: ${url}`);
       const response = await axios.get(url, { timeout: 3000 });
-      console.log(`✅ ${vendor} berhasil: ${url}`);
+      console.log(`${vendor} berhasil: ${url}`);
       return response.data;
     } catch (error) {
-      console.log(`❌ ${vendor} gagal: ${url} - ${error.code || error.message}`);
+      console.log(`${vendor} gagal: ${url} - ${error.code || error.message}`);
     }
   }
-  console.log(`⚠️ Semua endpoint ${vendor} gagal, menggunakan data dummy`);
+  console.log(`Semua endpoint ${vendor} gagal, menggunakan data dummy`);
   return getDummyData(vendor);
 }
 
@@ -65,7 +63,7 @@ app.get('/marketplace', async (req, res) => {
         result.push({
           id: p.kd_produk,
           name: p.nm_brg,
-          price: Math.floor(harga * 0.9), // Discount 10%
+          price: Math.floor(harga * 0.9),
           stock_status: p.ket_stok === 'ada' ? 'Tersedia' : 'Habis',
           vendor: "Warung Klontong (A)",
           original_price: harga
@@ -104,25 +102,8 @@ app.get('/marketplace', async (req, res) => {
       });
     }
 
-    // Tambah HTML view
-    if (req.headers.accept && req.headers.accept.includes('text/html')) {
-      res.send(generateHTML(result));
-    } else {
-      res.json({
-        success: true,
-        total_products: result.length,
-        vendors: {
-          A: Array.isArray(dataA) ? dataA.length : 0,
-          B: Array.isArray(dataB) ? dataB.length : 0,
-          C: Array.isArray(dataC) ? dataC.length : 0
-        },
-        products: result,
-        timestamp: new Date().toISOString()
-      });
-    }
-
   } catch (err) {
-    console.error('❌ Error utama:', err.message);
+    console.error('Error utama:', err.message);
     res.status(500).json({ 
       error: "Gagal mengambil data vendor",
       message: err.message,
@@ -135,162 +116,34 @@ app.get('/marketplace', async (req, res) => {
   }
 });
 
-function generateHTML(products) {
-  return `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Banyuwangi Marketplace</title>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; }
-      .container { max-width: 1200px; margin: 0 auto; }
-      .header { 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-        color: white; 
-        padding: 30px; 
-        border-radius: 10px;
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      .product-grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-        gap: 20px; 
-      }
-      .product-card { 
-        background: white; 
-        padding: 20px; 
-        border-radius: 10px; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transition: transform 0.3s;
-      }
-      .product-card:hover { transform: translateY(-5px); }
-      .vendor-badge { 
-        display: inline-block; 
-        padding: 4px 12px; 
-        border-radius: 20px; 
-        font-size: 12px; 
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-      .vendor-a { background: #4CAF50; color: white; }
-      .vendor-b { background: #2196F3; color: white; }
-      .vendor-c { background: #FF9800; color: white; }
-      .price { 
-        font-size: 24px; 
-        font-weight: bold; 
-        color: #2c3e50;
-        margin: 10px 0;
-      }
-      .original-price { 
-        text-decoration: line-through; 
-        color: #95a5a6; 
-        font-size: 14px;
-      }
-      .stock { 
-        padding: 5px 10px; 
-        border-radius: 5px; 
-        font-size: 14px;
-      }
-      .available { background: #d4edda; color: #155724; }
-      .unavailable { background: #f8d7da; color: #721c24; }
-      .summary {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>🛍️ Banyuwangi Marketplace</h1>
-        <p>Integrasi Multi-Vendor - UAS Interoperabilitas</p>
-        <p>Total Produk: ${products.length} items</p>
-      </div>
-      
-      <div class="summary">
-        <h3>📊 Ringkasan Integrasi</h3>
-        <p>Vendor A (Warung Klontong) | Vendor B (Distro Fashion) | Vendor C (Restoran)</p>
-      </div>
-      
-      <div class="product-grid">
-        ${products.map(p => `
-          <div class="product-card">
-            <div class="vendor-badge ${'vendor-' + p.vendor.charAt(0).toLowerCase()}">
-              ${p.vendor}
-            </div>
-            <h3>${p.name}</h3>
-            <div class="price">Rp ${p.price.toLocaleString()}</div>
-            ${p.original_price && p.original_price !== p.price ? 
-              `<div class="original-price">Rp ${p.original_price.toLocaleString()}</div>` : ''}
-            <div class="stock ${p.stock_status === 'Tersedia' ? 'available' : 'unavailable'}">
-              ${p.stock_status}
-            </div>
-            <p><strong>ID:</strong> ${p.id}</p>
-          </div>
-        `).join('')}
-      </div>
-      
-      <div style="margin-top: 40px; padding: 20px; background: white; border-radius: 10px;">
-        <h3>📡 API Endpoints</h3>
-        <ul>
-          <li><a href="/marketplace">/marketplace</a> - Halaman ini (HTML)</li>
-          <li><a href="/marketplace" onclick="fetchJSON(event)">/marketplace</a> - Data JSON (klik kanan untuk raw)</li>
-          <li><a href="http://localhost:3310/api/vendor-a" target="_blank">Vendor A API</a></li>
-          <li><a href="http://localhost:3307/api/vendor-b" target="_blank">Vendor B API</a></li>
-          <li><a href="https://vendor-c-resto.vercel.app/api/vendor-c" target="_blank">Vendor C API</a></li>
-        </ul>
-      </div>
-    </div>
-    
-    <script>
-      function fetchJSON(e) {
-        e.preventDefault();
-        fetch('/marketplace')
-          .then(r => r.json())
-          .then(data => {
-            console.log('JSON Data:', data);
-            alert('JSON data dikonsol. Lihat Developer Tools (F12)');
-          });
-      }
-    </script>
-  </body>
-  </html>
-  `;
-}
-
 app.get('/', (req, res) => {
   res.redirect('/marketplace');
 });
 
 const port = process.env.PORT || 3310;
 app.listen(port, () => {
-  console.log('\n========================================');
-  console.log('🚀 Integrator BERHASIL jalan!');
-  console.log(`🌐 Buka di browser: http://localhost:${port}/marketplace`);
-  console.log('📡 Sedang mencoba menghubungkan ke vendor...');
-  console.log('========================================\n');
-  
-  // Test koneksi saat startup
+  console.log('\n');
+  console.log('Integrator BERHASIL jalan!');
+  console.log(`Buka di browser: http://localhost:${port}/marketplace`);
+  console.log('Sedang mencoba menghubungkan ke vendor...');
+  console.log('\n');
+
   setTimeout(async () => {
     try {
-      console.log('🔄 Testing koneksi ke Vendor A (localhost:3310)...');
+      console.log('Testing koneksi ke Vendor A (localhost:3310)...');
       const testA = await axios.get('http://localhost:3310/api/vendor-a', { timeout: 2000 });
-      console.log(`✅ Vendor A terhubung: ${testA.data.length} produk`);
+      console.log(`Vendor A terhubung: ${testA.data.length} produk`);
     } catch (e) {
-      console.log('❌ Vendor A tidak merespon di localhost:3310');
+      console.log('Vendor A tidak merespon di localhost:3310');
       console.log('   Pastikan Vendor A berjalan di terminal lain');
     }
     
     try {
-      console.log('🔄 Testing koneksi ke Vendor B (localhost:3307)...');
+      console.log('Testing koneksi ke Vendor B (localhost:3307)...');
       const testB = await axios.get('http://localhost:3307/api/vendor-b', { timeout: 2000 });
-      console.log(`✅ Vendor B terhubung: ${testB.data.length} produk`);
+      console.log(`Vendor B terhubung: ${testB.data.length} produk`);
     } catch (e) {
-      console.log('❌ Vendor B tidak merespon di localhost:3307');
+      console.log('Vendor B tidak merespon di localhost:3307');
       console.log('   Pastikan Vendor B berjalan di terminal lain');
     }
   }, 1000);
