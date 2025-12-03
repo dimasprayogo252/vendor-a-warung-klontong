@@ -36,7 +36,7 @@ app.get('/marketplace', async (req, res) => {
                 vendor: "B"
             });
         });
-        
+
         c.data.forEach(p => {
             let name = p.details?.name || "Unknown";
             if (p.details?.category === "Food") name += " (Recommended)";
@@ -63,5 +63,5 @@ app.get('/', (req, res) => {
 const port = process.env.PORT || 3310;
 app.listen(port, () => {
     console.log('Integrator BERHASIL jalan!');
-    console.log(`Buka di browser: http://localhost:${port}/marketplace`);
+    console.log(`Buka di browser: http://localhost:3310/marketplace`);
 });
