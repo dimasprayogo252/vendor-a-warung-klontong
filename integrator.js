@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
-const VENDOR_A = 'http://localhost:3310/api/vendor-a';
+const VENDOR_A = 'https://vendor-a-klontong.vercel.app/api/vendor-a';
 const VENDOR_B = 'https://vendor-b-distro.vercel.app/api/vendor-b';
 const VENDOR_C = 'https://vendor-c-resto.vercel.app/api/vendor-c';
 
